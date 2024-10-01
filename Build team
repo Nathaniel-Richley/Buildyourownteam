@@ -1,0 +1,211 @@
+using System;
+using System.Collections.Generic;
+
+namespace BuildYourOwnFantasyTeam
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            List<Character> team = new List<Character>();
+            bool running = true;
+
+            while (running)
+            {
+                Console.Clear();
+                Console.WriteLine("Fantasy Team Builder");
+                Console.WriteLine("1. Add Character");
+                Console.WriteLine("2. View Team");
+                Console.WriteLine("3. Remove Character");
+                Console.WriteLine("4. Display Team Stats");
+                Console.WriteLine("5. Exit");
+                Console.Write("Choose an option: ");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        AddCharacter(team);
+                        break;
+                    case "2":
+                        ViewTeam(team);
+                        break;
+                    case "3":
+                        RemoveCharacter(team);
+                        break;
+                    case "4":
+                        DisplayTeamStats(team);
+                        break;
+                    case "5":
+                        running = false;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        break;
+                }
+
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+            }
+        }
+
+        static void AddCharacter(List<Character> team)
+        {
+            Console.Clear();
+            Console.WriteLine("Select Character Type:");
+            Console.WriteLine("1. Warrior");
+            Console.WriteLine("2. Mage");
+            Console.WriteLine("3. Archer");
+            Console.Write("Choose an option: ");
+            string typeChoice = Console.ReadLine();
+
+            Console.Write("Enter character name: ");
+            string name = Console.ReadLine();
+
+            int health = ReadIntegerInput("Enter character health: ");
+            int strength = ReadIntegerInput("Enter character strength: ");
+
+            switch (typeChoice)
+            {
+                case "1":
+                    Console.Write("Enter armor value: ");
+                    int armor = ReadIntegerInput("Enter armor value: ");
+                    team.Add(new Warrior(name, health, strength, armor));
+                    break;
+                case "2":
+                    Console.Write("Enter magic power: ");
+                    int magicPower = ReadIntegerInput("Enter magic power: ");
+                    team.Add(new Mage(name, health, strength, magicPower));
+                    break;
+                case "3":
+                    Console.Write("Enter agility: ");
+                    int agility = ReadIntegerInput("Enter agility: ");
+                    team.Add(new Archer(name, health, strength, agility));
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice, try again.");
+                    break;
+            }
+        }
+
+        static void ViewTeam(List<Character> team)
+        {
+            Console.Clear();
+            if (team.Count == 0)
+            {
+                Console.WriteLine("Your team is empty!");
+                return;
+            }
+
+            Console.WriteLine("Your Team:");
+            foreach (var character in team)
+            {
+                Console.WriteLine(character.ToString());
+            }
+        }
+
+        static void RemoveCharacter(List<Character> team)
+        {
+            Console.Write("Enter the name of the character to remove: ");
+            string name = Console.ReadLine();
+            int removedCount = team.RemoveAll(c => c.Name == name);
+            Console.WriteLine(removedCount > 0 ? "Character removed." : "Character not found.");
+        }
+
+        static void DisplayTeamStats(List<Character> team)
+        {
+            if (team.Count == 0)
+            {
+                Console.WriteLine("No characters in the team to display stats.");
+                return;
+            }
+
+            int totalHealth = 0;
+            int totalStrength = 0;
+
+            foreach (var character in team)
+            {
+                totalHealth += character.Health;
+                totalStrength += character.Strength;
+            }
+
+            Console.WriteLine($"Average Team Health: {totalHealth / team.Count}");
+            Console.WriteLine($"Average Team Strength: {totalStrength / team.Count}");
+        }
+
+        static int ReadIntegerInput(string prompt)
+        {
+            Console.Write(prompt);
+            int value;
+            while (!int.TryParse(Console.ReadLine(), out value))
+            {
+                Console.Write("Invalid input. " + prompt);
+            }
+            return value;
+        }
+    }
+
+    abstract class Character
+    {
+        public string Name { get; set; }
+        public int Health { get; set; }
+        public int Strength { get; set; }
+
+        public Character(string name, int health, int strength)
+        {
+            Name = name;
+            Health = health;
+            Strength = strength;
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} - Name: {Name}, Health: {Health}, Strength: {Strength}";
+        }
+    }
+
+    class Warrior : Character
+    {
+        public int Armor { get; set; }
+
+        public Warrior(string name, int health, int strength, int armor) : base(name, health, strength)
+        {
+            Armor = armor;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + $", Armor: {Armor}";
+        }
+    }
+
+    class Mage : Character
+    {
+        public int MagicPower { get; set; }
+
+        public Mage(string name, int health, int strength, int magicPower) : base(name, health, strength)
+        {
+            MagicPower = magicPower;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + $", Magic Power: {MagicPower}";
+        }
+    }
+
+    class Archer : Character
+    {
+        public int Agility { get; set; }
+
+        public Archer(string name, int health, int strength, int agility) : base(name, health, strength)
+        {
+            Agility = agility;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + $", Agility: {Agility}";
+        }
+    }
+}
